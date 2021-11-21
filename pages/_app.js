@@ -23,9 +23,9 @@ import	'tailwindcss/tailwind.css';
 
 const fetcher = (...args) => fetch(...args).then(res => res.json());
 const useSecretCode = () => {
-	const secretCode = process.env.SECRET.split(',');
-	const success = useSecret(secretCode);
-	return success;
+	// const secretCode = process.env.SECRET.split(',');
+	// const success = useSecret(secretCode);
+	return false;
 };
 
 function	AppWrapper(props) {
@@ -39,7 +39,7 @@ function	AppWrapper(props) {
 	return (
 		<>
 			<Head>
-				<title>{'Experimental Experiments Registry'}</title>
+				<title>{'Matic yield}</title>
 				<link rel={'icon'} href={'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>'} />
 				<meta httpEquiv={'X-UA-Compatible'} content={'IE=edge'} />
 				<meta name={'viewport'} content={'width=device-width, initial-scale=1'} />

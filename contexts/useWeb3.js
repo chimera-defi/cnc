@@ -28,10 +28,11 @@ function getProvider(chain = 'ethereum') {
 			return new ethers.providers.InfuraProvider('homestead', '9aa3d95b3bc440fa88ea12eaa4456161');
 		}
 	} else if (chain === 'polygon') {
-		if (process.env.ALCHEMY_KEY_POLYGON) {
-			return new ethers.providers.JsonRpcProvider(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY_POLYGON}`);
-		}
-		return new ethers.providers.JsonRpcProvider('https://rpc-mainnet.matic.network');
+		console.log('here')
+		// if (process.env.ALCHEMY_KEY_POLYGON) {
+			return new ethers.providers.JsonRpcProvider(`https://rpc-mainnet.maticvigil.com/v1/d6a3821ed91d7b17244f01163673599ce95fc0fc`);
+		// }
+		// return new ethers.providers.JsonRpcProvider('https://rpc-mainnet.matic.network');
 	} else if (chain === 'fantom') {
 		return new ethers.providers.JsonRpcProvider('https://rpc.ftm.tools');
 	} else if (chain === 'bsc') {
