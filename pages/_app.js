@@ -93,8 +93,8 @@ function	AppWrapper(props) {
 						{...pageProps} />
 				</div>
 				<div className={'absolute bottom-3 font-mono text-xxs left-0 right-0 flex justify-center items-center text-ygray-600 dark:text-white'}>
-					<a href={'https://twitter.com/ape_tax'} target={'_blank'} rel={'noreferrer'} className={'dashed-underline-gray cursor-pointer'}>
-						{'Made with 💙 by the 🦍 community'}
+					<a href={'https://app.gitbook.com/s/zFuaZYCBl3QlEWn71kNI/'} target={'_blank'} rel={'noreferrer'} className={'dashed-underline-gray cursor-pointer'}>
+						{'Docs'}
 					</a>
 					<p className={'mx-2'}>
 						{' - '}
