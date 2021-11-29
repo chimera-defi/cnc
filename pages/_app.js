@@ -39,11 +39,11 @@ function	AppWrapper(props) {
 	return (
 		<>
 			<Head>
-				<title>{'Matic yield}</title>
+				<title>{'Matic yield'}</title>
 				<link rel={'icon'} href={'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>'} />
 				<meta httpEquiv={'X-UA-Compatible'} content={'IE=edge'} />
 				<meta name={'viewport'} content={'width=device-width, initial-scale=1'} />
-				<meta name={'description'} content={'Experimental Experiments Registry'} />
+				<meta name={'description'} content={'CompoundNChill - Risk hedged yield aggregator'} />
 				<meta name={'msapplication-TileColor'} content={'#9fcc2e'} />
 				<meta name={'theme-color'} content={'#ffffff'} />
 				<meta charSet={'utf-8'} />
@@ -56,16 +56,16 @@ function	AppWrapper(props) {
 				<meta charSet={'utf-8'} />
 			</Head>
 			<DefaultSeo
-				title={'Experimental Experiments Registry'}
-				defaultTitle={'Experimental Experiments Registry'}
-				description={'Experimental Experiments Registry'}
+				title={'CompoundNChill - Risk hedged yield aggregator'}
+				defaultTitle={'CompoundNChill - Risk hedged yield aggregator'}
+				description={'CompoundNChill - Risk hedged yield aggregator'}
 				openGraph={{
 					type: 'website',
 					locale: 'en_US',
 					url: WEBSITE_URI,
 					site_name: 'ape.tax',
 					title: 'ape.tax',
-					description: 'Experimental Experiments Registry',
+					description: 'CompoundNChill - Risk hedged yield aggregator',
 					images: [
 						{
 							url: `${WEBSITE_URI}og.jpg`,

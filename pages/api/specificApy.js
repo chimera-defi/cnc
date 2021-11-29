@@ -47,6 +47,7 @@ async function	fetchBlockTimestamp(timestamp, network = 1) {
 		return null;
 	}
 	if (network === 137) {
+		console.log(process.env.POLYGONSCAN_API)
 		const	result = await performGet(`https://api.polygonscan.com/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before&apikey=${process.env.POLYGONSCAN_API}`);
 
 		if (result) {
@@ -216,6 +217,8 @@ export default async function handler(req, res) {
 		specificApyMapping[address] = result;
 		specificApyMappingAccess[address] = now;
 	}
+	console.log('here', specificApyMapping[address], rpc,lastAccess)
+
 	res.setHeader('Cache-Control', 's-maxage=600'); // 10 minutes
 	return res.status(200).json(specificApyMapping[address]);
 }

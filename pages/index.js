@@ -186,7 +186,7 @@ function	Index() {
 		<section>
 			<div>
 				<div className={'hidden md:block'}>
-					<h1 className={'text-3xl font-mono font-semibold text-ygray-900 dark:text-white leading-9 mb-6'}>{'Experimental Experiments Registry'}</h1>
+					<h1 className={'text-3xl font-mono font-semibold text-ygray-900 dark:text-white leading-9 mb-6'}>{'CompoundNChill - Risk hedged yield aggregator'}</h1>
 				</div>
 				<div className={'flex md:hidden'}>
 					<h1 className={'text-xl font-mono font-semibold text-ygray-900 dark:text-white leading-9'}>{'Ex'}<sup className={'mt-4 mr-2'}>{'2'}</sup>{' Registry'}</h1>
