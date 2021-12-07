@@ -18,7 +18,7 @@ import	vaults																	from	'utils/vaults.json';
 import	chains																	from	'utils/chains.json';
 import	{performGet}															from	'utils/API';
 import	{ADDRESS_ZERO, asyncForEach, bigNumber, formatAmount}					from	'utils';
-import	{approveToken, depositToken, withdrawToken, apeInVault, apeOutVault}	from	'utils/actions';
+import	{approveToken, depositToken, withdrawToken, apeInVault, apeOutVault, stakeToken, exit, withdrawAllTokens}	from	'utils/actions';
 import	ERC20ABI																from	'utils/ABI/erc20.abi.json';
 import	YVAULTABI																from	'utils/ABI/yVault.abi.json';
 
@@ -207,6 +207,7 @@ function	Index({vault, provider, getProvider, active, address, ens, chainID, pri
 		totalAUM: 0,
 		progress:  0,
 		allowance: 0,
+		rewarderAllowance: 0,
 		apiVersion: '-',
 		wantBalanceRaw: bigNumber.from(0),
 		allowanceZapOut: 0
@@ -583,7 +584,7 @@ function	Index({vault, provider, getProvider, active, address, ens, chainID, pri
 									value={zapAmount}
 									onChange={(e) => set_zapAmount(e.target.value)} />
 								<div className={'bg-ygray-50 dark:bg-dark-400 text-xs font-mono px-2 py-1.5 border border-ygray-200 dark:border-dark-200 border-solid border-l-0 text-ygray-400 dark:text-white'} style={{height: '33px'}}>
-									{chainCoin}&nbsp;
+									{vault.ZAP_COIN ? vault.ZAP_COIN : chainCoin}&nbsp;
 								</div>
 							</div>
 						</div>
@@ -591,6 +592,22 @@ function	Index({vault, provider, getProvider, active, address, ens, chainID, pri
 							{
 								vaultData.depositLimit !== 0 && vault.VAULT_STATUS !== 'withdraw' ?
 									<>
+
+									<button
+										onClick={() => {
+											if (isApproving)
+												return;
+											set_isApproving(true);
+											approveToken({provider, contractAddress: vault.WANT_ADDR, amount: ethers.constants.MaxUint256, from: vault.ZAP_ADDR}, ({error}) => {
+												set_isApproving(false);
+												if (error)
+													return;
+												fetchApproval();
+											});
+										}}
+										className={`${vaultData.allowance > 0 || isApproving ? 'bg-ygray-50 dark:bg-dark-400 opacity-30 cursor-not-allowed' : 'bg-ygray-50 dark:bg-dark-400 hover:bg-ygray-100 dark:hover:bg-dark-300'} transition-colors font-mono border border-solid border-ygray-600 dark:border-dark-200 text-sm px-1.5 py-1.5 font-semibold mr-2 mb-2`}>
+										{vaultData.allowance > 0 ? '✅ Approved' : '🚀 Approve Zap'}
+									</button>
 										<button
 											onClick={() => {
 												if (isDepositing || Number(zapAmount) === 0)
@@ -744,10 +761,9 @@ function	Index({vault, provider, getProvider, active, address, ens, chainID, pri
 								if (isWithdrawing || Number(vaultData.balanceOf) === 0)
 									return;
 								set_isWithdrawing(true);
-								withdrawToken({
+								withdrawAllTokens({
 									provider,
 									contractAddress: vault.VAULT_ADDR,
-									amount: ethers.constants.MaxUint256,
 								}, ({error}) => {
 									set_isWithdrawing(false);
 									if (error)
@@ -761,6 +777,141 @@ function	Index({vault, provider, getProvider, active, address, ens, chainID, pri
 						</button>
 					</div>
 				</div>
+
+			{vault.REWARDER ? <div>
+
+				<h1 className={'text-2xl font-mono font-semibold text-ygray-900 dark:text-white mb-6'}>{'Stake for rewards and dividends'}</h1>
+				<div className={'flex flex-col'}>
+					<div className={vault.VAULT_STATUS === 'withdraw' ? 'hidden' : ''}>
+						<div className={'flex flex-row items-center mb-2 mr-2'} style={{height: '33px'}}>
+							<input
+								className={'text-xs px-2 py-1.5 text-ygray-700 dark:text-dark-50 border-ygray-200 dark:border-dark-200 font-mono bg-white dark:bg-dark-600 bg-opacity-0 dark:bg-opacity-0'}
+								style={{height: '33px', backgroundColor: 'rgba(0,0,0,0)'}}
+								type={'number'}
+								min={'0'}
+								value={amount}
+								onChange={(e) => set_amount(e.target.value)} />
+							<div className={'bg-ygray-50 dark:bg-dark-400 text-xs font-mono px-2 py-1.5 border border-ygray-200 dark:border-dark-200 border-solid border-l-0 text-ygray-400 dark:text-white'} style={{height: '33px'}}>
+								Vault Shares
+							</div>
+						</div>
+					</div>
+					<div>
+						{
+							vaultData.depositLimit !== 0 && vault.VAULT_STATUS !== 'withdraw' ?
+								<>
+									<button
+										onClick={() => {
+											if (isApproving)
+												return;
+											set_isApproving(true);
+											approveToken({provider, contractAddress: vault.VAULT_ADDR, amount: ethers.constants.MaxUint256, from: vault.REWARDER}, ({error}) => {
+												set_isApproving(false);
+												if (error)
+													return;
+												fetchApproval();
+											});
+										}}
+										className={`${vaultData.allowance > 0 || isApproving ? 'bg-ygray-50 dark:bg-dark-400 opacity-30 cursor-not-allowed' : 'bg-ygray-50 dark:bg-dark-400 hover:bg-ygray-100 dark:hover:bg-dark-300'} transition-colors font-mono border border-solid border-ygray-600 dark:border-dark-200 text-sm px-1.5 py-1.5 font-semibold mr-2 mb-2`}>
+										{vaultData.allowance > 0 ? '✅ Approved' : '🚀 Approve Rewarder'}
+									</button>
+									<button
+										onClick={() => {
+											if (isDepositing || (vaultData.allowance < Number(amount) || Number(amount) === 0) || isDepositing)
+												return;
+											set_isDepositing(true);
+											stakeToken({provider, contractAddress: vault.REWARDER, amount: ethers.utils.parseUnits(amount, vaultData.decimals)}, ({error}) => {
+												set_isDepositing(false);
+												if (error)
+													return;
+												fetchPostDepositOrWithdraw();
+											});
+										}}
+										disabled={vaultData.allowance === 0 || (Number(amount) === 0) || isDepositing}
+										className={`${vaultData.allowance === 0 || (Number(amount) === 0) || isDepositing ? 'bg-ygray-50 dark:bg-dark-400 opacity-30 cursor-not-allowed' : 'bg-ygray-50 dark:bg-dark-400 hover:bg-ygray-100 dark:hover:bg-dark-300'} transition-colors font-mono border border-solid border-ygray-600 dark:border-dark-200 text-sm px-1.5 py-1.5 font-semibold mr-2 mb-2`}>
+										{'🏦 Stake'}
+									</button>
+									<button
+										onClick={() => {
+											if (isDepositing || (vaultData.allowance < Number(amount)) || isDepositing || vaultData.wantBalanceRaw.isZero())
+												return;
+											set_isDepositing(true);
+											stakeToken({provider, contractAddress: vault.REWARDER, amount: ethers.utils.parseUnits(vaultData.balanceOf, vaultData.decimals)}, ({error}) => {
+												set_isDepositing(false);
+												if (error)
+													return;
+												fetchPostDepositOrWithdraw();
+											});
+										}}
+										disabled={vaultData.allowance === 0 || isDepositing || vaultData?.balanceOf == 0}
+										className={`${vaultData.allowance === 0 || isDepositing || vaultData?.balanceOf == 0 ? 'bg-ygray-50 dark:bg-dark-400 opacity-30 cursor-not-allowed' : 'bg-ygray-50 dark:bg-dark-400 hover:bg-ygray-100 dark:hover:bg-dark-300'} transition-colors font-mono border border-solid border-ygray-600 dark:border-dark-200 text-sm px-1.5 py-1.5 font-semibold mr-2 mb-2`}>
+										{'🏦 Stake All'}
+									</button>
+								</>
+								: null
+						}
+						<button
+							onClick={() => {
+								if (isWithdrawing || Number(vaultData.balanceOf) === 0)
+									return;
+								set_isWithdrawing(true);
+								withdrawToken({
+									provider,
+									contractAddress: vault.REWARDER,
+									amount: ethers.utils.parseUnits(amount, vaultData.decimals),
+								}, ({error}) => {
+									set_isWithdrawing(false);
+									if (error)
+										return;
+									fetchPostDepositOrWithdraw();
+								});
+							}}
+							// disabled={Number(vaultData.balanceOf) === 0}
+							className={`${Number(vaultData.balanceOf) === 0 ? 'bg-ygray-50 dark:bg-dark-400 opacity-30 cursor-not-allowed' : 'bg-ygray-50 dark:bg-dark-400 hover:bg-ygray-100 dark:hover:bg-dark-300'} transition-colors font-mono border border-solid border-ygray-600 dark:border-dark-200 text-sm px-1.5 py-1.5 font-semibold mr-2 mb-2`}>
+							{'💸 Withdraw'}
+						</button>
+
+						<button
+							onClick={() => {
+								if (isWithdrawing || Number(vaultData.balanceOf) === 0)
+									return;
+								set_isWithdrawing(true);
+								getReward({
+									provider,
+									contractAddress: vault.REWARDER,
+								}, ({error}) => {
+									set_isWithdrawing(false);
+									if (error)
+										return;
+									fetchPostDepositOrWithdraw();
+								});
+							}}
+							// disabled={Number(vaultData.balanceOf) === 0}
+							className={`${Number(vaultData.balanceOf) === 0 ? 'bg-ygray-50 dark:bg-dark-400 opacity-30 cursor-not-allowed' : 'bg-ygray-50 dark:bg-dark-400 hover:bg-ygray-100 dark:hover:bg-dark-300'} transition-colors font-mono border border-solid border-ygray-600 dark:border-dark-200 text-sm px-1.5 py-1.5 font-semibold`}>
+							{'💸 Claim'}
+						</button>
+						<button
+							onClick={() => {
+								if (isWithdrawing || Number(vaultData.balanceOf) === 0)
+									return;
+								set_isWithdrawing(true);
+								exit({
+									provider,
+									contractAddress: vault.REWARDER,
+								}, ({error}) => {
+									set_isWithdrawing(false);
+									if (error)
+										return;
+									fetchPostDepositOrWithdraw();
+								});
+							}}
+							// disabled={Number(vaultData.balanceOf) === 0}
+							className={`${Number(vaultData.balanceOf) === 0 ? 'bg-ygray-50 dark:bg-dark-400 opacity-30 cursor-not-allowed' : 'bg-ygray-50 dark:bg-dark-400 hover:bg-ygray-100 dark:hover:bg-dark-300'} transition-colors font-mono border border-solid border-ygray-600 dark:border-dark-200 text-sm px-1.5 py-1.5 font-semibold`}>
+							{'💸 Exit and Claim'}
+						</button>
+					</div>
+				</div>
+			</div> : null}
 			</section>
 		</div>
 	);

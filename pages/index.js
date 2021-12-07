@@ -259,7 +259,7 @@ function	Index() {
 				</div>
 
 				<div className={'col-span-2 md:col-span-1 mb-4 w-full'}>
-					<h2 className={'text-2xl text-ygray-900 dark:text-white font-mono font-semibold mb-4'}>{'🧠 Weird'}</h2>
+					<h2 className={'text-2xl text-ygray-900 dark:text-white font-mono font-semibold mb-4'}>{'🧠 YieldRedirector Vaults'}</h2>
 					<ul>
 						{vaultsActiveWeird?.map((vault) => (
 							<li key={vault.VAULT_SLUG} className={'cursor-pointer'}>

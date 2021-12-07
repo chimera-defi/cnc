@@ -36,12 +36,13 @@
     "CHAIN_ID": 137
   },
   "cnc-usdc-yield-redirector": {
-    "TITLE": "CNC USDC Yield redirector",
-    "LOGO": "🍸🧞",
+    "TITLE": "CNC USDC to Klima Yield redirector",
+    "LOGO": "🌲🌍",
     "VAULT_ABI": "yVaultV2",
-    "VAULT_TYPE": "experimental",
+    "VAULT_TYPE": "weird",
     "VAULT_ADDR": "0xB65f32408EbE463248396933CcCe846C06C7a9fC",
     "WANT_ADDR": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    "REWARDER": "0xa1409f29361b600561582c7b337aa22e47f1c88e",
     "WANT_SYMBOL": "usdc",
     "COINGECKO_SYMBOL": "usdc",
     "VAULT_STATUS": "active",
