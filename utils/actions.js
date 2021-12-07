@@ -82,6 +82,8 @@ export async function	depositToken({provider, contractAddress, amount}, callback
 }
 
 export async function	stakeToken({provider, contractAddress, amount}, callback) {
+	// hack since tofixrd in index rounds up
+	amount = Math.floor(amount);
 	const	_toast = toast.loading('stake token...');
 	const	abi = ['function stake(uint256 amount)'];
 	const	signer = provider.getSigner();
